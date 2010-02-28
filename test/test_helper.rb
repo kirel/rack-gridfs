@@ -12,3 +12,9 @@ gem 'mongo', '>= 0.15.1'
 require 'mongo'
 require 'mongo/gridfs'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rack', 'gridfs')
+
+class Hash
+  def except(*keys)
+    self.dup.delete_if { |k,_| keys.include? k }
+  end
+end
