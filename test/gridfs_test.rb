@@ -26,7 +26,7 @@ class Rack::GridFSTest < Test::Unit::TestCase
   def load_artifact(filename, key, content_type)
     GridFS::GridStore.open(db, key, 'w', :content_type => content_type) do |dest|
       File.open(File.join(File.dirname(__FILE__), 'artifacts', filename), 'r') do |orig|
-        dest.puts orig.read
+        dest.write orig.read
       end
     end
   end
@@ -102,12 +102,12 @@ class Rack::GridFSTest < Test::Unit::TestCase
       end
 
       teardown do
-        db.collection('fs.files').clear
+        db.collection('fs.files').remove
       end
 
       should "return TXT files stored in GridFS" do
         get '/gridfs/test.txt'
-        assert_equal "Lorem ipsum dolor sit amet.\n", last_response.body
+        assert_equal "Lorem ipsum dolor sit amet.", last_response.body
       end
 
       should "return the proper content type for TXT files" do
