@@ -42,9 +42,8 @@ module Rack
 
     def gridfs_request(key)
       if ::GridFS::GridStore.exist?(connection, key)
-        ::GridFS::GridStore.open(connection, key, 'r') do |file|
-          [200, {'Content-Type' => file.content_type}, [file.read]]
-        end
+        body = ::GridFS::GridStore.new(connection, key, 'r')
+        [200, {'Content-Type' => body.content_type}, body]
       else
         not_found
       end
