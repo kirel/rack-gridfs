@@ -104,6 +104,30 @@ class Rack::GridFSTest < Test::Unit::TestCase
       teardown do
         db.collection('fs.files').remove
       end
+      
+      should "ignore POST" do
+        post '/gridfs/test.txt'
+        assert last_response.ok?
+        assert_equal 'Hello, World!', last_response.body
+      end
+
+      should "ignore PUT" do
+        post '/gridfs/test.txt'
+        assert last_response.ok?
+        assert_equal 'Hello, World!', last_response.body
+      end
+      
+      should "ignore DELETE" do
+        post '/gridfs/test.txt'
+        assert last_response.ok?
+        assert_equal 'Hello, World!', last_response.body
+      end
+      
+      should "return only headers for HEAD" do
+        head '/gridfs/test.txt'
+        assert last_response.ok?
+        assert last_response.body.empty?
+      end
 
       should "return TXT files stored in GridFS" do
         get '/gridfs/test.txt'

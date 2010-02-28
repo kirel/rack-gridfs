@@ -29,8 +29,13 @@ module Rack
 
     def call(env)
       request = Rack::Request.new(env)
-      if request.path_info =~ /^\/#{prefix}\/(.+)$/
-        gridfs_request($1)
+      if %w(GET HEAD).include?(request.request_method) && request.path_info =~ /^\/#{prefix}\/(.+)$/
+        case request.request_method
+        when "GET"
+          gridfs_request($1)
+        when "HEAD"
+          gridfs_head_request($1)
+        end
       else
         @app.call(env)
       end
@@ -44,6 +49,16 @@ module Rack
       if ::GridFS::GridStore.exist?(connection, key)
         body = ::GridFS::GridStore.new(connection, key, 'r')
         [200, {'Content-Type' => body.content_type}, body]
+      else
+        not_found
+      end
+    end
+
+    def gridfs_head_request(key)
+      if ::GridFS::GridStore.exist?(connection, key)
+        ::GridFS::GridStore.open(connection, key, 'r') do |f|
+          [200, {'Content-Type' => f.content_type}, []]
+        end
       else
         not_found
       end
