@@ -91,7 +91,7 @@ class Rack::GridFSTest < Test::Unit::TestCase
       %w( / /posts /posts/1 /posts/1/comments ).each do |path|
         get path
         assert last_response.ok?
-        assert 'Hello, World!', last_response.body
+        assert_equal 'Hello, World!', last_response.body
       end
     end
 
